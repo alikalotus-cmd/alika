@@ -96,30 +96,6 @@ CREATE TABLE Peminjaman (
     FOREIGN KEY (id_anggota) REFERENCES Anggota(id_anggota)
 );`,
     instructions: '1. Buat diagram ERD 3-NF.\n2. Eksekusi DDL script untuk membuat tabel dan foreign keys.'
-  },
-  {
-    id: 'info-5',
-    title: 'Analisis Keamanan Jaringan & Enkripsi Sederhana (AES/Hashing)',
-    category: 'Algoritma',
-    date: '22 Juni 2026',
-    status: 'Selesai',
-    score: '96 / 100',
-    summary: 'Studi literatur dan simulasi skrip Python untuk enkripsi pesan menggunakan algoritma hashing MD5 dan SHA-256 serta analisis celah keamanan Wi-Fi publik.',
-    tags: ['Cybersecurity', 'Python', 'Encryption', 'Network'],
-    fileSize: '1.5 MB',
-    codeSnippet: `import hashlib
-
-def encrypt_message(message):
-    # MD5 & SHA-256 Hashing demonstration
-    md5_hash = hashlib.md5(message.encode()).hexdigest()
-    sha256_hash = hashlib.sha256(message.encode()).hexdigest()
-    return md5_hash, sha256_hash
-
-msg = "KunciRahasiaAlika"
-md5, sha = encrypt_message(msg)
-print(f"MD5: {md5}")
-print(f"SHA-256: {sha}")`,
-    instructions: '1. Tulis penjelasan mengenai kerentanan Wi-Fi publik.\n2. Buat skrip Python untuk melakukan enkripsi/hashing teks.'
   }
 ];
 
@@ -212,70 +188,19 @@ Bahasa Indonesia sebagai bahasa nasional mengalami perkembangan dinamis seiring 
 
 ### BAB II: PEMBAHASAN
 Berdasarkan sampel 200 unggahan di media sosial, terjadi pergeseran singkatan dan istilah serapan informal. Meskipun demikian, kesadaran akan penggunaan bahasa baku tetap tinggi dalam situasi formal seperti penulisan artikel ilmiah dan karya jurnalistik.`
-  },
-  {
-    id: 'bindo-5',
-    title: 'Kritik Sastra: Fenomena Fiksi Penggemar (Fanfiction) di Platform Wattpad',
-    category: 'Karya Tulis',
-    date: '18 Juni 2026',
-    status: 'Selesai',
-    score: '95 / 100',
-    readTime: '5 min baca',
-    summary: 'Kajian kritis mengenai perkembangan tulisan fiksi penggemar (fanfiction) sebagai wadah kreativitas menulis alternatif remaja masa kini.',
-    tags: ['Kritik Sastra', 'Sastra Digital', 'Karya Tulis'],
-    content: `### Pendahuluan
-Perkembangan teknologi internet membuka ruang kreativitas tanpa batas bagi siapa saja untuk mempublikasikan tulisan mereka. Salah satu fenomena sastra digital yang paling menonjol di kalangan remaja saat ini adalah merebaknya fiksi penggemar (fanfiction) di platform seperti Wattpad.
-
-### Pembahasan
-Fiksi penggemar adalah genre tulisan yang ditulis oleh pembaca berdasarkan tokoh, latar, atau alur cerita dari karya populer yang sudah ada (misalnya film, novel, atau tokoh terkenal dunia nyata). 
-
-Meskipun seringkali dianggap kurang berbobot secara akademis dibandingkan karya sastra konvensional, penulisan fiksi penggemar melatih kemampuan menyusun alur cerita (plotting), pendalaman karakter, dan kosa kata penulis pemula. Ini merupakan gerbang awal yang ramah bagi remaja untuk mencintai dunia tulis-menulis.
-
-### Kesimpulan
-Sebagai bentuk sastra alternatif, fiksi penggemar patut dipresiasi sebagai ruang belajar menulis kreatif yang dinamis bagi generasi muda.`
   }
 ];
 
 // App State Management
-window.initHomepage = function(targetTabId) {
-  // 1. Run global components only once
-  if (!window.alikaGlobalInitialized) {
-    initTheme();
-    initProfileImage();
-    window.alikaGlobalInitialized = true;
-  }
-
-  // 2. Render homepage components if we are on the homepage
-  const dashboard = document.getElementById('dashboard');
-  if (!dashboard) return; // Exit if not on home page
-
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initNavigation();
   renderInformatika(dataInformatika);
   renderBahasaIndonesia(dataBahasaIndonesia);
   setupFilters();
   setupSearch();
   setupModals();
-  initMemoryGame();
-  initStickyBoard();
-  initNavigation();
-  if (typeof window.initOrbitWidget === 'function') {
-    window.initOrbitWidget();
-  }
-
-  // 3. Handle tab switching from hash or parameter
-  const tabId = targetTabId || window.location.hash.substring(1) || 'dashboard';
-  if (tabId && document.getElementById(tabId) && typeof window.switchAlikaTab === 'function') {
-    window.switchAlikaTab(tabId);
-  }
-};
-
-if (document.readyState === 'complete' || document.readyState === 'interactive') {
-  window.initHomepage();
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
-    window.initHomepage();
-  });
-}
-
+});
 
 // Theme Management
 function initTheme() {
@@ -297,69 +222,6 @@ function initTheme() {
   }
 }
 
-// Profile Image Management
-function initProfileImage() {
-  const profileImageInput = document.getElementById('profileImageInput');
-  const profileImageDisplay = document.getElementById('profileImageDisplay');
-  const profilePlaceholder = document.getElementById('profilePlaceholder');
-  const dashboardAvatar = document.getElementById('dashboardAvatar');
-
-  // Load saved profile image from localStorage
-  const savedImage = localStorage.getItem('alika_profile_image');
-  if (savedImage) {
-    if (profileImageDisplay) {
-      profileImageDisplay.src = savedImage;
-      profileImageDisplay.classList.remove('hidden');
-    }
-    if (profilePlaceholder) {
-      profilePlaceholder.classList.add('hidden');
-    }
-    if (dashboardAvatar) {
-      dashboardAvatar.src = savedImage;
-    }
-  }
-
-  if (profileImageInput) {
-    profileImageInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        // Validation for image size (e.g. max 2MB for localStorage limits)
-        if (file.size > 2 * 1024 * 1024) {
-          showToast('Gambar terlalu besar. Batas ukuran adalah 2MB.');
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          const dataUrl = event.target.result;
-          
-          try {
-            // Save to localStorage
-            localStorage.setItem('alika_profile_image', dataUrl);
-            
-            // Update UI elements
-            if (profileImageDisplay) {
-              profileImageDisplay.src = dataUrl;
-              profileImageDisplay.classList.remove('hidden');
-            }
-            if (profilePlaceholder) {
-              profilePlaceholder.classList.add('hidden');
-            }
-            if (dashboardAvatar) {
-              dashboardAvatar.src = dataUrl;
-            }
-            showToast('Foto profil berhasil diperbarui! ✨');
-          } catch (err) {
-            console.error(err);
-            showToast('Gagal menyimpan foto. Coba foto dengan ukuran lebih kecil.');
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-}
-
 // Navigation Logic
 function initNavigation() {
   const navLinks = document.querySelectorAll('.nav-link');
@@ -368,12 +230,6 @@ function initNavigation() {
   const mobileNav = document.getElementById('mobileNav');
 
   function switchTab(targetTabId) {
-    // Remove temporary hash routing style if exists to avoid interfering with normal styling
-    const tempStyle = document.getElementById('temp-hash-routing-style');
-    if (tempStyle) {
-      tempStyle.remove();
-    }
-
     // Hide all sections
     sections.forEach(sec => {
       sec.classList.add('hidden');
@@ -410,19 +266,21 @@ function initNavigation() {
     }
   }
 
-  window.switchAlikaTab = switchTab; // Expose globally for SPA router
-
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
+      e.preventDefault();
       const target = link.getAttribute('data-target');
-      if (target) {
-        e.preventDefault();
-        switchTab(target);
-      }
+      if (target) switchTab(target);
     });
   });
 
-  // Initial hash routing is managed once by initHomepage to prevent duplicate tab flashes
+  // Handle Initial Hash
+  const hash = window.location.hash.substring(1);
+  if (hash && document.getElementById(hash)) {
+    switchTab(hash);
+  } else {
+    switchTab('dashboard');
+  }
 
   // Mobile Menu Toggle
   if (mobileMenuBtn && mobileNav) {
@@ -466,62 +324,40 @@ function renderInformatika(items) {
     return;
   }
 
-  container.innerHTML = items.map(item => {
-    const scoreNum = parseInt(item.score.split('/')[0].trim()) || 0;
-    const progressColorClass = scoreNum >= 98 
-      ? 'text-pink-500 dark:text-pink-400' 
-      : (scoreNum >= 95 ? 'text-purple-500 dark:text-purple-400' : 'text-emerald-500 dark:text-emerald-400');
-    
-    return `
-      <div class="glass-panel p-6 rounded-[1.5rem] border border-white/50 dark:border-white/5 hover:border-pink-300 dark:hover:border-pink-700/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group card-hologram">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <span class="tag-badge border ${getPastelCategoryClasses(item.category)}">
-              ${item.category}
-            </span>
-            <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-500">${item.date}</span>
-          </div>
-          <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-pink-500 transition-colors font-tech">
-            ${item.title}
-          </h3>
-          <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6 line-clamp-3 leading-relaxed">
-            ${item.summary}
-          </p>
+  container.innerHTML = items.map(item => `
+    <div class="glass-panel p-6 rounded-[1.5rem] border border-white/50 dark:border-white/5 hover:border-pink-300 dark:hover:border-pink-700/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group card-hologram">
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <span class="tag-badge border ${getPastelCategoryClasses(item.category)}">
+            ${item.category}
+          </span>
+          <span class="text-xs font-semibold text-zinc-400 dark:text-zinc-500">${item.date}</span>
         </div>
+        <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-pink-500 transition-colors">
+          ${item.title}
+        </h3>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6 line-clamp-3 leading-relaxed">
+          ${item.summary}
+        </p>
+      </div>
 
-        <div>
-          <div class="flex flex-wrap gap-1.5 mb-5">
-            ${item.tags.map(t => `<span class="text-[11px] px-2 py-0.5 rounded bg-zinc-50 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 font-mono border border-zinc-200/50 dark:border-zinc-800/40 hover:bg-pink-50 dark:hover:bg-zinc-800 hover:text-pink-600 dark:hover:text-pink-300 transition-colors cursor-pointer">#${t}</span>`).join('')}
-          </div>
-          <div class="pt-4 border-t border-pink-100/50 dark:border-zinc-800/40 flex items-center justify-between">
-            <!-- Circular SVG Score Gauge -->
-            <div class="flex items-center gap-2.5">
-              <div class="relative w-8 h-8 flex items-center justify-center flex-shrink-0">
-                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <!-- Background Track -->
-                  <path class="text-zinc-100 dark:text-zinc-800" stroke-width="3" stroke="currentColor" fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  <!-- Progress Bar -->
-                  <path class="${progressColorClass} transition-all duration-1000" stroke-width="3.5" stroke-dasharray="${scoreNum}, 100" stroke-linecap="round" stroke="currentColor" fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                </svg>
-                <span class="absolute text-[8px] font-extrabold font-mono text-zinc-700 dark:text-zinc-200 leading-none">${scoreNum}</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-[9px] text-zinc-400 dark:text-zinc-550 font-bold uppercase tracking-wider leading-none mb-0.5">Nilai Tugas</span>
-                <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 leading-none">${item.score}</span>
-              </div>
-            </div>
-
-            <button onclick="openInfoModal('${item.id}')" class="px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:opacity-90 dark:from-pink-500 dark:to-purple-500 rounded-xl transition-all shadow-md flex items-center gap-1.5 shadow-pink-300/10 hover:shadow-pink-400/25 active:scale-95 duration-200 cursor-pointer">
-              <span>Detail Kode</span>
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </button>
-          </div>
+      <div>
+        <div class="flex flex-wrap gap-1.5 mb-5">
+          ${item.tags.map(t => `<span class="text-[11px] px-2 py-0.5 rounded bg-zinc-50 dark:bg-zinc-900/40 text-zinc-500 dark:text-zinc-400 font-mono border border-zinc-200/50 dark:border-zinc-800/40">#${t}</span>`).join('')}
+        </div>
+        <div class="pt-4 border-t border-pink-100/50 dark:border-zinc-800/40 flex items-center justify-between">
+          <span class="text-xs font-semibold text-pink-600 dark:text-pink-400 flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Nilai: ${item.score}
+          </span>
+          <button onclick="openInfoModal('${item.id}')" class="px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-pink-400 to-purple-400 hover:opacity-90 dark:from-pink-500 dark:to-purple-500 rounded-xl transition-all shadow-md flex items-center gap-1.5 shadow-pink-300/10">
+            <span>Detail Kode</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </button>
         </div>
       </div>
-    `;
-  }).join('');
+    </div>
+  `).join('');
 }
 
 // Render Indonesian Language Assignments
@@ -807,403 +643,3 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
-
-// Articles Data for Informatics
-const articlesData = {
-  'ai-education': {
-    title: 'Integrasi AI dalam Kurikulum Sekolah Masa Kini',
-    category: 'Teknologi',
-    date: '20 Juli 2026',
-    author: 'Alika Lotus Apriyanto',
-    summary: 'Penerapan kecerdasan buatan dalam proses belajar mengajar membuka gerbang efisiensi baru. Dari personalisasi materi hingga penilaian otomatis, AI menjadi asisten setia guru dalam mencetak generasi cerdas digital.',
-    content: `### Pendahuluan
-Kecerdasan Buatan (Artificial Intelligence) bukan lagi masa depan, melainkan realitas hari ini yang menyentuh berbagai aspek kehidupan manusia. Di dunia pendidikan, AI mulai diintegrasikan ke dalam kurikulum sekolah untuk mempercepat adaptasi siswa terhadap era otomasi.
-
-### Mengapa AI Penting di Sekolah?
-Pertama, **pembelajaran terpersonalisasi**. Platform berbasis AI dapat menganalisis kelemahan dan kelebihan belajar siswa secara real-time, kemudian merekomendasikan latihan soal yang spesifik sesuai kebutuhan masing-masing.
-
-Kedua, **membantu guru**. Tugas administratif seperti memeriksa ujian pilihan ganda atau mendata presensi kini bisa diotomatiskan, sehingga guru memiliki lebih banyak waktu untuk interaksi emosional dan pembimbingan karakter siswa.
-
-### Kesimpulan
-Teknologi ini adalah alat bantu yang kuat. Keberhasilan integrasi AI di sekolah bergantung pada kolaborasi bijak antara teknologi dan bimbingan manusia agar proses belajar tetap humanis.`
-  },
-  'coding-teen': {
-    title: 'Mengapa Remaja Harus Belajar Coding?',
-    category: 'Programming',
-    date: '14 Juli 2026',
-    author: 'Alika Lotus Apriyanto',
-    summary: 'Coding bukan sekadar menulis instruksi untuk komputer, melainkan latihan berpikir logis dan memecahkan masalah (computational thinking). Mempelajari pemrograman melatih otak kita terstruktur dalam menghadapi tantangan.',
-    content: `### Lebih dari Sekadar Kode
-Banyak orang mengira belajar coding hanya ditujukan bagi mereka yang ingin menjadi software engineer atau programmer. Padahal, coding adalah cara melatih otak kita untuk berpikir secara logis, runut, dan terstruktur.
-
-### Computational Thinking
-Ketika menulis baris-baris kode, kita dituntut untuk:
-1. **Dekomposisi**: Memecah masalah besar menjadi bagian-bagian kecil yang mudah dikelola.
-2. **Pengenalan Pola**: Mencari kesamaan atau pola dari masalah yang pernah diselesaikan sebelumnya.
-3. **Abstraksi**: Fokus pada informasi penting dan mengabaikan detail yang kurang relevan.
-4. **Algoritma**: Menyusun langkah-langkah sistematis untuk menyelesaikan masalah.
-
-Kemampuan berpikir computational thinking ini sangat berguna di kehidupan sehari-hari, bahkan jika siswa tidak memilih karir di bidang teknologi.
-
-### Kesimpulan
-Belajar coding melatih daya juang (resilience) saat menghadapi galat (error) dan melatih logika analitis yang sangat krusial bagi masa depan generasi muda.`
-  },
-  'wifi-security': {
-    title: 'Mengamankan Data Pribadi di Wi-Fi Publik',
-    category: 'Cybersecurity',
-    date: '08 Juli 2026',
-    author: 'Alika Lotus Apriyanto',
-    summary: 'Wi-Fi gratis di kafe atau sekolah memang menyenangkan, namun menyimpan bahaya besar berupa man-in-the-middle attacks. Memahami cara melindungi perangkat dengan VPN dan menghindari transaksi keuangan di jaringan publik sangat krusial.',
-    content: `### Bahaya di Balik Wi-Fi Gratis
-Mendapatkan akses internet gratis di kafe, perpustakaan, atau stasiun memang sangat membantu. Namun, jaringan Wi-Fi publik tanpa proteksi sandi (open network) adalah ladang subur bagi para pelaku kejahatan siber untuk melancarkan serangan.
-
-### Bagaimana Serangan Terjadi?
-Salah satu teknik yang paling umum adalah **Man-in-the-Middle (MitM) Attack**. Dalam skenario ini, peretas memosisikan diri di antara perangkat Anda dan router Wi-Fi. Semua data yang Anda kirimkan (seperti username, password, atau chat) dapat disadap dengan mudah.
-
-### Tips Perlindungan Mandiri
-Untuk menghindari kebocoran data, lakukan langkah-langkah berikut:
-- **Gunakan VPN**: Virtual Private Network mengenkripsi seluruh lalu lintas data Anda, sehingga tidak dapat dibaca oleh pihak lain di jaringan yang sama.
-- **Hindari Transaksi Sensitif**: Jangan pernah membuka aplikasi perbankan m-banking atau memasukkan data kartu kredit saat terhubung ke Wi-Fi publik.
-- **Gunakan Koneksi HTTPS**: Pastikan situs web yang Anda kunjungi selalu menggunakan protokol HTTPS (memiliki lambang gembok di browser).
-
-### Kesimpulan
-Kewaspadaan digital adalah pertahanan utama kita di ruang siber. Selalu lindungi data pribadi Anda!`
-  }
-};
-
-// Open Article Modal
-window.openArticleModal = function (id) {
-  const item = articlesData[id];
-  if (!item) return;
-
-  const modalOverlay = document.getElementById('assignmentModal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalMeta = document.getElementById('modalMeta');
-  const modalBody = document.getElementById('modalBody');
-
-  modalTitle.innerText = item.title;
-  modalMeta.innerHTML = `
-    <span class="tag-badge border bg-pastel-pink-bg text-pastel-pink-accent border-pastel-pink-border/40 dark:bg-pastel-pink-light/10 dark:border-pastel-pink-border/20">${item.category}</span>
-    <span class="text-xs text-zinc-500 dark:text-zinc-400">Diposting: ${item.date}</span>
-    <span class="text-xs text-pink-600 dark:text-pink-400 font-semibold">Penulis: ${item.author}</span>
-  `;
-
-  modalBody.innerHTML = `
-    <div class="space-y-4">
-      <div class="bg-pink-50/20 dark:bg-zinc-900/40 p-4 rounded-xl border border-pink-100/50 dark:border-zinc-800/40 mb-4">
-        <h4 class="text-xs uppercase tracking-wider font-semibold text-pink-500 dark:text-pink-400 mb-1">Ringkasan Artikel</h4>
-        <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">${item.summary}</p>
-      </div>
-
-      <div class="prose dark:prose-invert max-w-none text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 whitespace-pre-line">
-        ${item.content}
-      </div>
-    </div>
-  `;
-
-  modalOverlay.classList.remove('hidden');
-};
-
-// Interactive Terminal Simulation for Informatika Section
-let terminalBusy = false;
-window.runTerminalCmd = function(cmd) {
-  if (terminalBusy) return;
-  const outputEl = document.getElementById('terminalOutput');
-  if (!outputEl) return;
-
-  if (cmd === 'clear') {
-    outputEl.innerHTML = `
-      <p class="text-zinc-500">$ clear</p>
-      <p class="text-pink-400 font-bold blink-cursor mt-1">&gt; ready to explore</p>
-    `;
-    return;
-  }
-
-  terminalBusy = true;
-  outputEl.innerHTML = `<p class="text-zinc-500">$ run ${cmd}</p>`;
-
-  let lines = [];
-  if (cmd === 'all') {
-    lines = [
-      '&gt; Scanning all modules...',
-      'WebDev: <span class="text-emerald-400 font-bold">100% Active</span>',
-      'UI/UX: <span class="text-emerald-400 font-bold">100% Active</span>',
-      'Database: <span class="text-purple-400 font-bold">Active</span>',
-      'Algorithms: <span class="text-emerald-400 font-bold">Optimized</span>',
-      'System: <span class="text-pink-400 font-semibold">ALL TASKS ONLINE ✓</span>'
-    ];
-  } else if (cmd === 'specs') {
-    lines = [
-      '&gt; Fetching repository environment...',
-      'Stack: HTML5 / TailwindCSS / VanillaJS',
-      'Modules: 2 active (Informatika, B.Indo)',
-      'Total Works: 10 documented assignments',
-      'Aesthetics: Soft Pink & Pastel Purple',
-      'State: Fully Responsive, Darkmode Ready'
-    ];
-  } else if (cmd === 'sort') {
-    lines = [
-      '&gt; Initiating Bubble Sort Simulation...',
-      'Input: [42, 12, 88, 3, 27]',
-      'Step 1: [12, 42, 3, 27, 88] (comp: 10)',
-      'Step 2: [12, 3, 27, 42, 88] (comp: 20)',
-      'Step 3: [3, 12, 27, 42, 88] (comp: 25)',
-      'Sorted: [3, 12, 27, 42, 88] ✓ (Time: 0.12ms)'
-    ];
-  } else {
-    lines = ['&gt; Error: Command not recognized.'];
-  }
-
-  let lineIdx = 0;
-  function printNextLine() {
-    if (lineIdx < lines.length) {
-      const p = document.createElement('p');
-      p.className = 'text-zinc-300 opacity-0 transform translate-y-1 transition-all duration-300';
-      p.innerHTML = lines[lineIdx];
-      outputEl.appendChild(p);
-      
-      // Trigger CSS transition animation
-      setTimeout(() => {
-        p.classList.remove('opacity-0', 'translate-y-1');
-      }, 10);
-
-      lineIdx++;
-      setTimeout(printNextLine, 220); // delay between lines
-    } else {
-      // Print cursor at the end
-      const cursor = document.createElement('p');
-      cursor.className = 'text-pink-400 blink-cursor font-bold mt-1';
-      cursor.innerHTML = '&gt; ready to explore';
-      outputEl.appendChild(cursor);
-      terminalBusy = false;
-    }
-  }
-
-  setTimeout(printNextLine, 300);
-};
-
-// ==========================================================================
-// Memory Match Mini Game Logic
-// ==========================================================================
-let memoryCards = [];
-let flippedCards = [];
-let matchedCount = 0;
-let gameTurns = 0;
-let lockBoard = false;
-
-const cardIcons = ['📖', '💻', '🎨', '🎵', '🍰', '🍵'];
-const gameIcons = [...cardIcons, ...cardIcons]; // 12 cards, 6 pairs
-
-window.initMemoryGame = function() {
-  const grid = document.getElementById('memory-game-grid');
-  const turnsDisplay = document.getElementById('game-turns');
-  const victoryScreen = document.getElementById('game-victory-screen');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-  flippedCards = [];
-  matchedCount = 0;
-  gameTurns = 0;
-  lockBoard = false;
-  
-  if (turnsDisplay) turnsDisplay.innerText = '0';
-  if (victoryScreen) {
-    victoryScreen.classList.add('opacity-0', 'pointer-events-none');
-    victoryScreen.classList.remove('opacity-100');
-  }
-
-  // Shuffle icons using Fisher-Yates or simple sort
-  const shuffledIcons = [...gameIcons].sort(() => Math.random() - 0.5);
-
-  // Generate cards markup
-  shuffledIcons.forEach((icon, index) => {
-    const card = document.createElement('div');
-    card.className = 'memory-card w-full h-[65px]';
-    card.dataset.icon = icon;
-    card.dataset.index = index;
-
-    card.innerHTML = `
-      <div class="memory-card-inner w-full h-full">
-        <div class="memory-card-front">
-          <span>?</span>
-        </div>
-        <div class="memory-card-back">
-          <span>${icon}</span>
-        </div>
-      </div>
-    `;
-
-    card.addEventListener('click', () => flipCard(card));
-    grid.appendChild(card);
-  });
-};
-
-function flipCard(card) {
-  if (lockBoard) return;
-  if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
-
-  card.classList.add('flipped');
-  flippedCards.push(card);
-
-  if (flippedCards.length === 2) {
-    gameTurns++;
-    const turnsDisplay = document.getElementById('game-turns');
-    if (turnsDisplay) turnsDisplay.innerText = gameTurns;
-    
-    checkForMatch();
-  }
-}
-
-function checkForMatch() {
-  const [card1, card2] = flippedCards;
-  const isMatch = card1.dataset.icon === card2.dataset.icon;
-
-  if (isMatch) {
-    disableCards();
-  } else {
-    unflipCards();
-  }
-}
-
-function disableCards() {
-  flippedCards[0].classList.add('matched');
-  flippedCards[1].classList.add('matched');
-  
-  // Quick bounce animation for match
-  flippedCards.forEach(c => {
-    c.style.transform = 'scale(1.05)';
-    setTimeout(() => {
-      c.style.transform = 'scale(1)';
-    }, 200);
-  });
-
-  matchedCount += 2;
-  flippedCards = [];
-
-  if (matchedCount === gameIcons.length) {
-    showVictoryScreen();
-  }
-}
-
-function unflipCards() {
-  lockBoard = true;
-  setTimeout(() => {
-    flippedCards[0].classList.remove('flipped');
-    flippedCards[1].classList.remove('flipped');
-    flippedCards = [];
-    lockBoard = false;
-  }, 1000);
-}
-
-function showVictoryScreen() {
-  const victoryScreen = document.getElementById('game-victory-screen');
-  const victoryTurns = document.getElementById('victory-turns');
-  if (victoryTurns) victoryTurns.innerText = gameTurns;
-  
-  if (victoryScreen) {
-    victoryScreen.classList.remove('pointer-events-none', 'opacity-0');
-    victoryScreen.classList.add('opacity-100');
-  }
-}
-
-window.resetMemoryGame = function() {
-  window.initMemoryGame();
-};
-
-// ==========================================================================
-// Papan Catatan Tempel Logic
-// ==========================================================================
-let stickyNotes = [];
-
-const defaultNotes = [
-  { id: 'def-1', author: 'Alika', message: 'Semangat belajar & vibe coding hari ini ya! 🌸💻', color: 'pink', date: 'Hari ini', rotate: -2 },
-  { id: 'def-2', author: 'Mama', message: 'Jangan lupa minum air putih yang cukup! 💧🍵', color: 'purple', date: 'Kemarin', rotate: 3 },
-  { id: 'def-3', author: 'Budi', message: 'Keren banget website portofolionya! Sukses terus! 🚀', color: 'blue', date: '2 hari lalu', rotate: -1 },
-  { id: 'def-4', author: 'Tzu Chi School', message: 'Cinta kasih menyatukan kita semua. 🌸🏫', color: 'mint', date: '3 hari lalu', rotate: 2 }
-];
-
-window.initStickyBoard = function() {
-  const storedNotes = localStorage.getItem('alika_sticky_notes');
-  if (storedNotes) {
-    try {
-      stickyNotes = JSON.parse(storedNotes);
-    } catch (e) {
-      stickyNotes = [...defaultNotes];
-    }
-  } else {
-    stickyNotes = [...defaultNotes];
-    localStorage.setItem('alika_sticky_notes', JSON.stringify(stickyNotes));
-  }
-  renderStickyNotes();
-};
-
-function renderStickyNotes() {
-  const container = document.getElementById('sticky-notes-container');
-  if (!container) return;
-
-  container.innerHTML = '';
-  stickyNotes.forEach(note => {
-    const noteEl = document.createElement('div');
-    noteEl.className = `sticky-note sticky-note-${note.color} animate-fade-in`;
-    noteEl.style.transform = `rotate(${note.rotate || 0}deg)`;
-
-    noteEl.innerHTML = `
-      <div>
-        <span onclick="deleteStickyNote('${note.id}')" class="sticky-note-delete">×</span>
-        <p class="font-serif italic leading-snug break-words mb-2">"${escapeHtml(note.message)}"</p>
-      </div>
-      <div class="flex justify-between items-center text-[8px] opacity-75 font-mono">
-        <span class="font-bold">By: ${escapeHtml(note.author)}</span>
-        <span>${note.date}</span>
-      </div>
-    `;
-
-    container.appendChild(noteEl);
-  });
-  container.scrollTop = container.scrollHeight;
-}
-
-window.handleStickySubmit = function(event) {
-  event.preventDefault();
-  const authorInput = document.getElementById('sticky-author-input');
-  const messageInput = document.getElementById('sticky-message-input');
-  if (!authorInput || !messageInput) return;
-
-  const author = authorInput.value.trim();
-  const message = messageInput.value.trim();
-  if (author === '' || message === '') return;
-
-  const colorRadios = document.getElementsByName('sticky-color');
-  let color = 'pink';
-  for (const radio of colorRadios) {
-    if (radio.checked) {
-      color = radio.value;
-      break;
-    }
-  }
-
-  const randomRotate = Math.floor(Math.random() * 9) - 4;
-
-  const newNote = {
-    id: 'note-' + Date.now(),
-    author: author,
-    message: message,
-    color: color,
-    date: 'Baru saja',
-    rotate: randomRotate === 0 ? 1 : randomRotate
-  };
-
-  stickyNotes.push(newNote);
-  localStorage.setItem('alika_sticky_notes', JSON.stringify(stickyNotes));
-  
-  renderStickyNotes();
-
-  authorInput.value = '';
-  messageInput.value = '';
-};
-
-window.deleteStickyNote = function(id) {
-  stickyNotes = stickyNotes.filter(note => note.id !== id);
-  localStorage.setItem('alika_sticky_notes', JSON.stringify(stickyNotes));
-  renderStickyNotes();
-};
